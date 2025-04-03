@@ -1,0 +1,13 @@
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "python app.py"
+healthcheckPath = "/"
+healthcheckTimeout = 100
+
+[phases.setup]
+aptPkgs = ["chromium-browser", "fonts-noto-color-emoji"]
+
+[phases.build]
+cmds = ["playwright install chromium", "playwright install-deps"]
