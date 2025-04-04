@@ -1,0 +1,28 @@
+name: Hypem to Squarespace Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+          
+      - name: Run test script
+        env:
+          HYPEM_USERNAME: irieidea
+          SQUARESPACE_API_KEY: ${{ secrets.SQUARESPACE_API_KEY }}
+          SQUARESPACE_DOMAIN: synthesizer-tuna-92rs.squarespace.com
+        run: python hypem_squarespace_integration.py
