@@ -1,0 +1,36 @@
+name: Update Last Processed ID
+
+on:
+  workflow_run:
+    workflows: ["Hypem to Squarespace Sync"]
+    types:
+      - completed
+
+jobs:
+  update-secret:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: last-processed-id
+          path: ./
+
+      - name: Read last processed ID
+        id: read-id
+        run: |
+          if [ -f ".last_processed_id" ]; then
+            echo "LAST_ID=$(cat .last_processed_id)" >> $GITHUB_OUTPUT
+          else
+            echo "No last processed ID found"
+            exit 0
+          fi
+
+      - name: Update secret
+        if: steps.read-id.outputs.LAST_ID != ''
+        uses: hmanzur/actions-set-secret@v2.0.0
+        with:
+          name: 'LAST_PROCESSED_ID'
+          value: ${{ steps.read-id.outputs.LAST_ID }}
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
